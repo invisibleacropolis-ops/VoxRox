@@ -1,3 +1,4 @@
+import type React from 'react';
 import type { Profile, Turn } from '@/api/types';
 import { PixelButton } from '@/ui/primitives/PixelButton';
 import { PixelFrame } from '@/ui/primitives/PixelFrame';
@@ -38,16 +39,19 @@ export function RenderedTurn({
   onDelete,
 }: RenderedTurnProps) {
   const label = profile ? profile.card.shortName || profile.name : 'unknown speaker';
+  const accent = profile?.card.accentColor || '#837fa4';
 
   return (
     <PixelFrame
       variant="raised"
-      className="vx-turn vx-anim-slide-in"
+      studded
+      className="vx-turn vx-anim-fly-left"
+      style={{ '--accent': accent } as React.CSSProperties}
       data-testid="turn"
       data-active={active ? 'true' : 'false'}
     >
       <div className="vx-turn__head">
-        <span style={{ color: profile?.card.accentColor }}>{label}</span>
+        <span className="vx-turn__speaker">{label}</span>
         <span>
           {turn.audio ? `${turn.audio.durationSec.toFixed(2)}s` : 'not rendered'}
           {onEdit && (
@@ -71,6 +75,8 @@ export function RenderedTurn({
         src={turn.audio?.url ?? null}
         name={turn.audio?.filename ?? 'no audio yet'}
         durationSec={turn.audio?.durationSec ?? 0}
+        peaks={turn.audio?.peaks ?? []}
+        accentColor={accent}
         volume={volume}
         downloadable={Boolean(turn.audio)}
       />

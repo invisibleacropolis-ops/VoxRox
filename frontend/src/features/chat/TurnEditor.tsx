@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '@/api/client';
-import type { GenerationParams, Profile, Turn } from '@/api/types';
+import type { GenerationParams, PreviewResult, Profile, Turn } from '@/api/types';
 import { insertAt } from '@/lib/tagText';
 import { PixelButton } from '@/ui/primitives/PixelButton';
 import { PixelPanel } from '@/ui/primitives/PixelPanel';
@@ -32,7 +32,7 @@ export function TurnEditor({
 }: TurnEditorProps) {
   const [text, setText] = useState(turn.text);
   const [params, setParams] = useState<GenerationParams>(turn.params);
-  const [preview, setPreview] = useState<{ url: string; durationSec: number } | null>(null);
+  const [preview, setPreview] = useState<PreviewResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const areaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -157,6 +157,8 @@ export function TurnEditor({
                 src={preview?.url ?? null}
                 name={preview ? 'preview.wav' : 'no preview yet'}
                 durationSec={preview?.durationSec ?? 0}
+                peaks={preview?.peaks ?? []}
+                accentColor={profile.card.accentColor}
               />
               <PixelButton disabled={blank} busy={busy} onClick={() => void runPreview()}>
                 Preview

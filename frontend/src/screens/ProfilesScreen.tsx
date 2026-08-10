@@ -7,6 +7,7 @@ import { SamplesBar } from '@/features/profiles/SamplesBar';
 import { VoiceSettingsPanel } from '@/features/profiles/VoiceSettingsPanel';
 import { useProfileStore } from '@/state/profileStore';
 import { PixelButton } from '@/ui/primitives/PixelButton';
+import { PixelColorPicker } from '@/ui/primitives/PixelColorPicker';
 import { PixelFrame } from '@/ui/primitives/PixelFrame';
 import { PixelPanel } from '@/ui/primitives/PixelPanel';
 import { PixelScrollArea } from '@/ui/primitives/PixelScrollArea';
@@ -131,6 +132,11 @@ export function ProfilesScreen() {
                     onBlur={() =>
                       tagline !== selected.card.tagline && patch({ card: { tagline } })
                     }
+                  />
+                  <span className="vx-field__label">Banner colour</span>
+                  <PixelColorPicker
+                    value={selected.card.accentColor}
+                    onChange={(accentColor) => patch({ card: { accentColor } })}
                   />
                 </div>
                 <PixelButton

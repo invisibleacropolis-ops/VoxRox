@@ -3,8 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from voxrox import tags
-from voxrox.audio import write_wav
+from voxrox.audio import compute_peaks, write_wav
 from voxrox.config import get_settings
+
+# Bars in the waveform strip. Enough detail to read speech rhythm at ~600px wide.
+WAVEFORM_BUCKETS = 160
 from voxrox.engine.base import SynthesisRequest, SynthesisResult, TTSEngine
 from voxrox.models import (
     ArchiveEntry, GenerationParams, Profile, Project, Turn, TurnAudio, VoiceDesign, new_id,
@@ -78,17 +81,20 @@ def build_request(
 
 def synthesize_to(
     engine: TTSEngine, request: SynthesisRequest, destination: Path
-) -> tuple[str, float]:
+) -> tuple[float, list[float]]:
+    """Synthesize to `destination`. Returns (duration_sec, waveform peaks)."""
     result: SynthesisResult = engine.synthesize(request)
     duration = write_wav(destination, result.samples, result.sample_rate)
-    return str(destination), round(duration, 3)
+    return round(duration, 3), compute_peaks(result.samples, WAVEFORM_BUCKETS)
 
 
-def render_preview(engine: TTSEngine, request: SynthesisRequest) -> tuple[str, float]:
+def render_preview(
+    engine: TTSEngine, request: SynthesisRequest
+) -> tuple[str, float, list[float]]:
     preview_id = new_id()
     destination = get_settings().preview_dir / f"{preview_id}.wav"
-    _, duration = synthesize_to(engine, request, destination)
-    return preview_id, duration
+    duration, peaks = synthesize_to(engine, request, destination)
+    return preview_id, duration, peaks
 
 
 def render_turn(
@@ -101,11 +107,12 @@ def render_turn(
         voice_override=turn.voice_override,
     )
     destination = get_settings().renders_dir / project.id / f"{turn.id}.wav"
-    _, duration = synthesize_to(engine, request, destination)
+    duration, peaks = synthesize_to(engine, request, destination)
     turn.audio = TurnAudio(
         url=f"/media/renders/{project.id}/{turn.id}.wav",
         filename=f"{turn.id}.wav",
         duration_sec=duration,
+        peaks=peaks,
     )
     turn.status = "rendered"
     _record_archive(project, turn, profile, duration)

@@ -27,13 +27,40 @@
   overflow-y: auto;
   padding-right: var(--gap-1);
 }
+/* Each turn is rimmed in its speaker's colour — --accent is set inline. */
 .vx-turn {
+  --accent: var(--c-accent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 75%, white) 0%,
+    var(--accent) 40%,
+    color-mix(in srgb, var(--accent) 45%, black) 100%
+  );
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.55));
+  transition: filter var(--dur) var(--step-4);
+}
+.vx-turn > .vx-frame__face {
   display: flex;
   flex-direction: column;
   gap: var(--gap-1);
+  padding: var(--gap-1);
 }
 .vx-turn[data-active='true'] {
-  animation: vx-pulse-accent 600ms var(--step-2) infinite;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 80%, transparent))
+    drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.55));
+}
+.vx-turn[data-active='true'] > .vx-frame__face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 58%
+  );
+  animation: vx-glint 1.8s var(--step-6) infinite;
 }
 .vx-turn__text {
   font-size: var(--fs-md);
@@ -41,11 +68,14 @@
   white-space: pre-wrap;
   word-break: break-word;
   padding: var(--gap-1);
-  background: var(--c-panel-lo);
-  box-shadow: inset 0 0 0 var(--px) var(--c-line-dim);
+  background: linear-gradient(180deg, #0a0912 0%, #131120 100%);
+  box-shadow:
+    inset 0 2px 0 0 rgba(0, 0, 0, 0.8),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, #131120);
 }
 .vx-turn__tag {
   color: var(--c-magic);
+  text-shadow: 0 0 6px rgba(180, 140, 242, 0.5);
 }
 .vx-turn__head {
   display: flex;
@@ -53,7 +83,13 @@
   justify-content: space-between;
   gap: var(--gap-1);
   font-size: var(--fs-xs);
-  color: var(--c-line-dim);
+  color: var(--m-steel-hi);
+}
+.vx-turn__speaker {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 .vx-editor {
   display: grid;

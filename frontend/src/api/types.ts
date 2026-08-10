@@ -73,6 +73,8 @@ export interface TurnAudio {
   filename: string;
   durationSec: number;
   sampleRate: number;
+  /** Normalised 0..1 waveform peaks, one per display bar. */
+  peaks: number[];
   renderedAt: string;
 }
 
@@ -152,6 +154,7 @@ export interface EngineStatus {
 export interface PreviewResult {
   url: string;
   durationSec: number;
+  peaks: number[];
 }
 
 export type DeepPartial<T> = {

@@ -100,7 +100,7 @@ describe('projectStore', () => {
           { id: 't2', profileId: 'p1', text: 'b', params: { numStep: 32, speed: 1, duration: null },
             voiceOverride: null, status: 'rendered',
             audio: { url: '/media/b.wav', filename: 'b.wav', durationSec: 1,
-                     sampleRate: 24000, renderedAt: 'x' },
+                     sampleRate: 24000, peaks: [], renderedAt: 'x' },
             createdAt: 'x', updatedAt: 'x' },
         ],
       }),

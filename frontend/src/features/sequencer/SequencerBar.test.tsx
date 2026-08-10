@@ -13,7 +13,7 @@ const RENDERED: Turn = {
   params: { numStep: 32, speed: 1, duration: null },
   voiceOverride: null, status: 'rendered',
   audio: { url: '/media/renders/proj1/t1.wav', filename: 't1.wav',
-           durationSec: 1.5, sampleRate: 24000, renderedAt: 'x' },
+           durationSec: 1.5, sampleRate: 24000, peaks: [0.2, 0.9, 0.4], renderedAt: 'x' },
   createdAt: 'x', updatedAt: 'x',
 };
 

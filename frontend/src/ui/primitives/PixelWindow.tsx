@@ -38,22 +38,24 @@ export function PixelWindow({
 
   const windowEl = (
     <PixelFrame
-      variant="raised"
+      variant="gold"
+      studded
+      flush
       role="dialog"
       aria-modal={modal || undefined}
       aria-label={titleText}
       className={`vx-window vx-anim-open ${className}`}
     >
-      <div className="vx-window__bar">
+      <div className="vx-window__bar vx-glint vx-glint--ambient">
         <span className="vx-window__title">{title}</span>
         {onClose && (
           <button
             type="button"
-            className="vx-btn vx-btn--sm vx-window__close"
+            className="vx-btn vx-btn--sm vx-btn--danger"
             aria-label={`Close ${titleText}`}
             onClick={onClose}
           >
-            X
+            <span className="vx-btn__face vx-glint">X</span>
           </button>
         )}
       </div>

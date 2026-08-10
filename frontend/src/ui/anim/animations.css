@@ -78,9 +78,148 @@
   }
 }
 
+/* Specular sweep. Travels well past both edges so the band enters and
+   leaves cleanly instead of popping in mid-surface. */
+@keyframes vx-glint {
+  0% {
+    transform: translateX(-170%);
+  }
+  55%,
+  100% {
+    transform: translateX(170%);
+  }
+}
+
+/* Overshoot landing — the RPG menu "thunk". */
+@keyframes vx-bounce-in {
+  0% {
+    transform: scale(0.3) translateY(-40%);
+    opacity: 0;
+  }
+  45% {
+    transform: scale(1.18) translateY(6%);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.94) translateY(-3%);
+  }
+  85% {
+    transform: scale(1.05) translateY(1%);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes vx-fly-in-left {
+  0% {
+    transform: translateX(-130%) skewX(12deg);
+    opacity: 0;
+  }
+  70% {
+    transform: translateX(6%) skewX(-3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) skewX(0);
+  }
+}
+
+@keyframes vx-fly-in-right {
+  0% {
+    transform: translateX(130%) skewX(-12deg);
+    opacity: 0;
+  }
+  70% {
+    transform: translateX(-6%) skewX(3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) skewX(0);
+  }
+}
+
+@keyframes vx-fly-out-right {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(140%) skewX(-14deg);
+    opacity: 0;
+  }
+}
+
+@keyframes vx-expand-y {
+  0% {
+    transform: scaleY(0.02);
+    opacity: 0.5;
+  }
+  60% {
+    transform: scaleY(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes vx-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+/* Idle bob for a focused card — two-step so it reads as sprite motion. */
+@keyframes vx-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
 .vx-anim-open {
   animation: vx-window-open var(--dur-slow) var(--step-6) both;
   transform-origin: center center;
+}
+.vx-anim-bounce {
+  animation: vx-bounce-in 320ms var(--step-6) both;
+  transform-origin: center top;
+}
+.vx-anim-fly-left {
+  animation: vx-fly-in-left var(--dur-slow) var(--step-6) both;
+}
+.vx-anim-fly-right {
+  animation: vx-fly-in-right var(--dur-slow) var(--step-6) both;
+}
+.vx-anim-fly-out {
+  animation: vx-fly-out-right var(--dur) var(--step-4) both;
+}
+.vx-anim-expand {
+  animation: vx-expand-y var(--dur) var(--step-4) both;
+  transform-origin: center top;
+}
+.vx-anim-shake {
+  animation: vx-shake 260ms var(--step-4);
+}
+.vx-anim-float {
+  animation: vx-float 1.6s var(--step-2) infinite;
 }
 .vx-anim-close {
   animation: vx-window-close var(--dur) var(--step-4) both;
@@ -105,7 +244,18 @@
   .vx-anim-slide-in,
   .vx-anim-pop,
   .vx-anim-blink,
-  .vx-anim-busy {
+  .vx-anim-busy,
+  .vx-anim-bounce,
+  .vx-anim-fly-left,
+  .vx-anim-fly-right,
+  .vx-anim-fly-out,
+  .vx-anim-expand,
+  .vx-anim-shake,
+  .vx-anim-float,
+  .vx-glint--ambient::after,
+  .vx-glint--slow::after,
+  .vx-btn .vx-btn__face::after,
+  .vx-swatch::after {
     animation: none !important;
   }
 }

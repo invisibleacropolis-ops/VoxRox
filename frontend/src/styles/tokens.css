@@ -8,14 +8,16 @@
   --gap-4: 32px;
 
   /* --- palette (dark RPG menu) ------------------------------------ */
-  --c-void: #07060c;
-  --c-ink: #100e1a;
-  --c-panel: #1b192b;
-  --c-panel-hi: #2b2842;
-  --c-panel-lo: #131120;
-  --c-line: #eae7f7;
-  --c-line-dim: #837fa4;
-  --c-shadow: #04030a;
+  --c-void: #0b0810;
+  --c-ink: #1a1420;
+  /* Warm, saturated panel body — reads as dyed leather under brass, not as
+     unlit navy. Kept light enough that engraved detail survives. */
+  --c-panel: #3a2b3d;
+  --c-panel-hi: #4e3a4e;
+  --c-panel-lo: #281d2c;
+  --c-line: #f4eede;
+  --c-line-dim: #a495a8;
+  --c-shadow: #07050b;
 
   --c-accent: #f2c14e;
   --c-accent-lo: #a5761f;
@@ -40,6 +42,46 @@
   --step-2: steps(2, end);
   --step-4: steps(4, end);
   --step-6: steps(6, end);
+
+  /* --- metal ------------------------------------------------------- */
+  /* Four stops per metal: specular, light, body, shadow. Hard-stopped in
+     gradients so the fill bands like dithered pixel art instead of smearing. */
+  --m-gold-spec: #fff4cf;
+  --m-gold-hi: #f0c96a;
+  --m-gold: #c99433;
+  --m-gold-lo: #8a5f1d;
+  --m-gold-dk: #4a3210;
+
+  /* Default control face: warm bone/parchment, light enough that engraved
+     dark text reads at 12px. This is what the reference sheets use. */
+  --m-bone-spec: #fffaf0;
+  --m-bone-hi: #f2e2c4;
+  --m-bone: #d9c199;
+  --m-bone-lo: #a68a5f;
+  --m-bone-dk: #5c4930;
+
+  --m-steel-spec: #f2f5fb;
+  --m-steel-hi: #b9c4d8;
+  --m-steel: #78849c;
+  --m-steel-lo: #444d61;
+  --m-steel-dk: #20252f;
+
+  --m-blood-spec: #ffc9b6;
+  --m-blood-hi: #e07a5f;
+  --m-blood: #a83f2c;
+  --m-blood-lo: #6d2418;
+  --m-blood-dk: #38110b;
+
+  --m-jade-spec: #d6ffe9;
+  --m-jade-hi: #7fd8a4;
+  --m-jade: #3f9c68;
+  --m-jade-lo: #235c3d;
+  --m-jade-dk: #122c1e;
+
+  /* --- geometry ---------------------------------------------------- */
+  --chamfer: 4px;         /* corner cut on plates */
+  --chamfer-lg: 8px;      /* corner cut on windows */
+  --bevel: 2px;           /* highlight/shadow lip thickness */
 
   /* --- borders ---------------------------------------------------- */
   --border-w: var(--px);

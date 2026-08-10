@@ -111,6 +111,23 @@ def test_render_attaches_audio_to_the_turn(engine_client, project, turn):
     assert updated["audio"]["durationSec"] == pytest.approx(1.5, abs=0.01)
 
 
+def test_render_attaches_waveform_peaks(engine_client, project, turn):
+    response = engine_client.post(
+        f"/api/projects/{project['id']}/turns/{turn['id']}/render"
+    )
+    peaks = response.json()["turns"][0]["audio"]["peaks"]
+    assert len(peaks) == 160
+    assert max(peaks) == pytest.approx(1.0, abs=1e-4)
+    assert all(0.0 <= p <= 1.0 for p in peaks)
+
+
+def test_preview_returns_waveform_peaks(engine_client, profile):
+    payload = engine_client.post(
+        "/api/preview", json={"profileId": profile["id"], "text": "Hi"}
+    ).json()
+    assert len(payload["peaks"]) == 160
+
+
 def test_render_writes_the_file(engine_client, project, turn, data_dir):
     engine_client.post(f"/api/projects/{project['id']}/turns/{turn['id']}/render")
     path = data_dir / "media" / "renders" / project["id"] / f"{turn['id']}.wav"

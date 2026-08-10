@@ -38,14 +38,18 @@ def create_preview(
             params=body.params or profile.params,
             voice_override=body.voiceOverride,
         )
-        preview_id, duration = render_service.render_preview(engine, request)
+        preview_id, duration, peaks = render_service.render_preview(engine, request)
     except render_service.RenderError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"synthesis failed: {exc}")
-    return {"url": f"/api/preview/{preview_id}", "durationSec": duration}
+    return {
+        "url": f"/api/preview/{preview_id}",
+        "durationSec": duration,
+        "peaks": peaks,
+    }
 
 
 @router.get("/preview/{preview_id}")

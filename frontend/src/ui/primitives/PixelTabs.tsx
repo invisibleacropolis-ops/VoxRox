@@ -38,7 +38,7 @@ export function PixelTabs({
           key={item.id}
           type="button"
           role="tab"
-          className="vx-btn vx-tab"
+          className="vx-tab"
           aria-selected={item.id === value}
           disabled={item.disabled}
           tabIndex={item.id === value ? 0 : -1}

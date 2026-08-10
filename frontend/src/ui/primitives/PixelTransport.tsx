@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type MouseEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { formatTime } from '@/lib/formatTime';
 import { PixelButton } from './PixelButton';
+import { PixelWaveform } from './PixelWaveform';
 import './primitives.css';
 
 export interface PixelTransportProps {
@@ -9,6 +10,10 @@ export interface PixelTransportProps {
   durationSec?: number;
   downloadable?: boolean;
   volume?: number;
+  /** Normalised waveform peaks from the backend. */
+  peaks?: number[];
+  /** Tints the played portion of the waveform. */
+  accentColor?: string;
   className?: string;
 }
 
@@ -18,6 +23,8 @@ export function PixelTransport({
   durationSec = 0,
   downloadable = false,
   volume = 1,
+  peaks = [],
+  accentColor,
   className = '',
 }: PixelTransportProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -49,28 +56,24 @@ export function PixelTransport({
     setElapsed(0);
   };
 
-  const seek = (event: MouseEvent<HTMLDivElement>) => {
+  const seekTo = (fraction: number) => {
     const audio = audioRef.current;
     if (!audio || !total) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const ratio = (event.clientX - rect.left) / (rect.width || 1);
-    audio.currentTime = Math.max(0, Math.min(1, ratio)) * total;
+    audio.currentTime = fraction * total;
     setElapsed(audio.currentTime);
   };
 
-  const progress = total > 0 ? Math.min(100, (elapsed / total) * 100) : 0;
+  const progress = total > 0 ? elapsed / total : 0;
 
   return (
     <div className={`vx-transport ${src ? '' : 'vx-transport--empty'} ${className}`}>
       <span className="vx-transport__name">{name}</span>
-      <div
-        className="vx-transport__bar"
-        role="presentation"
-        onClick={seek}
-        title="Seek"
-      >
-        <div className="vx-transport__fill" style={{ width: `${progress}%` }} />
-      </div>
+      <PixelWaveform
+        peaks={src ? peaks : []}
+        progress={progress}
+        onSeek={seekTo}
+        accentColor={accentColor}
+      />
       <span className="vx-transport__time">
         {formatTime(elapsed)} / {formatTime(total)}
       </span>
@@ -87,7 +90,7 @@ export function PixelTransport({
           download={name}
           aria-label={`Download ${name}`}
         >
-          Save
+          <span className="vx-btn__face vx-glint">Save</span>
         </a>
       )}
       {src && (

@@ -105,6 +105,7 @@ class TurnAudio(Base):
     filename: str
     duration_sec: float
     sample_rate: int = 24_000
+    peaks: list[float] = Field(default_factory=list)
     rendered_at: str = Field(default_factory=utc_now)
 
 

@@ -23,3 +23,23 @@ def write_wav(path: Path | str, samples: np.ndarray, sample_rate: int) -> float:
 def probe_duration(path: Path | str) -> float:
     info = sf.info(str(path))
     return info.frames / float(info.samplerate)
+
+
+def compute_peaks(samples: np.ndarray, buckets: int = 160) -> list[float]:
+    """Downsample audio to `buckets` peak magnitudes normalised to 0..1.
+
+    Drives the waveform display. Peak (not RMS) so plosives and transients stay
+    visible at small widths, which is what makes a waveform readable as speech.
+    """
+    array = np.asarray(samples, dtype=np.float32).reshape(-1)
+    if array.size == 0:
+        return []
+    magnitude = np.abs(array)
+    # Pad to a whole number of buckets so every bar covers the same span.
+    per_bucket = int(np.ceil(magnitude.size / buckets))
+    padded = np.pad(magnitude, (0, per_bucket * buckets - magnitude.size))
+    peaks = padded.reshape(buckets, per_bucket).max(axis=1)
+    ceiling = float(peaks.max())
+    if ceiling > 0:
+        peaks = peaks / ceiling
+    return [round(float(value), 4) for value in peaks]

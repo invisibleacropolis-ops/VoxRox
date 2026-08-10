@@ -90,7 +90,7 @@ describe('TurnEditor', () => {
   it('requests a preview with the current text and params', async () => {
     const spy = vi
       .spyOn(api, 'createPreview')
-      .mockResolvedValue({ url: '/api/preview/abc', durationSec: 1.5 });
+      .mockResolvedValue({ url: '/api/preview/abc', durationSec: 1.5, peaks: [] });
     renderEditor();
     await userEvent.type(screen.getByLabelText('Turn text'), 'Hi');
     await userEvent.click(screen.getByRole('button', { name: 'Preview' }));
@@ -107,6 +107,7 @@ describe('TurnEditor', () => {
     vi.spyOn(api, 'createPreview').mockResolvedValue({
       url: '/api/preview/abc',
       durationSec: 1.5,
+      peaks: [0.3, 0.8, 0.5],
     });
     renderEditor();
     await userEvent.type(screen.getByLabelText('Turn text'), 'Hi');

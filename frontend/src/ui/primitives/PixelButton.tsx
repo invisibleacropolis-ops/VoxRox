@@ -43,7 +43,7 @@ export function PixelButton({
       data-selected={selected ? 'true' : undefined}
       {...rest}
     >
-      {children}
+      <span className="vx-btn__face vx-glint">{children}</span>
     </button>
   );
 }

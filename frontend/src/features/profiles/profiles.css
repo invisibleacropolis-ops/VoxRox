@@ -1,39 +1,109 @@
+/* Character card: an enamelled plate in the character's own colour, with a
+   brushed-metal rim and a slow specular drift. --accent is set inline. */
 .vx-card {
+  --accent: var(--c-accent);
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 2px;
+  text-align: left;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent) 85%, white) 0%,
+    var(--accent) 35%,
+    color-mix(in srgb, var(--accent) 55%, black) 65%,
+    color-mix(in srgb, var(--accent) 25%, black) 100%
+  );
+  --cut: var(--chamfer);
+  clip-path: polygon(
+    var(--cut) 0%,
+    calc(100% - var(--cut)) 0%,
+    100% var(--cut),
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    var(--cut) 100%,
+    0% calc(100% - var(--cut)),
+    0% var(--cut)
+  );
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.6));
+  transition: filter var(--dur-fast) var(--step-2);
+}
+.vx-card__inner {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: var(--gap-1);
   padding: var(--gap-1);
-  width: 100%;
-  text-align: left;
-  background: var(--c-panel);
-  box-shadow:
-    0 0 0 var(--px) var(--c-line),
-    calc(var(--px) * 1) calc(var(--px) * 1) 0 0 var(--c-shadow);
-  transition: background var(--dur-fast) var(--step-2);
+  overflow: hidden;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0) 18%,
+      rgba(0, 0, 0, 0.35) 82%,
+      rgba(0, 0, 0, 0.6) 100%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 22%, #1b192b) 0%,
+      #14121f 60%,
+      #0d0b14 100%
+    );
+  --cut: calc(var(--chamfer) - 1px);
+  clip-path: polygon(
+    var(--cut) 0%,
+    calc(100% - var(--cut)) 0%,
+    100% var(--cut),
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    var(--cut) 100%,
+    0% calc(100% - var(--cut)),
+    0% var(--cut)
+  );
 }
-.vx-card:hover:not(:disabled) {
-  background: var(--c-panel-hi);
+button.vx-card:hover:not(:disabled) {
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.6)) brightness(1.2);
+}
+button.vx-card:hover:not(:disabled) .vx-card__inner::after,
+button.vx-card:focus-visible .vx-card__inner::after {
+  opacity: 1;
+  animation: vx-glint 780ms var(--step-6);
 }
 .vx-card[aria-pressed='true'] {
-  box-shadow:
-    0 0 0 var(--px) var(--c-accent),
-    calc(var(--px) * 1) calc(var(--px) * 1) 0 0 var(--c-shadow);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 70%, transparent))
+    drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.6));
 }
+.vx-card[aria-pressed='true'] .vx-card__inner::after {
+  opacity: 1;
+  animation: vx-glint 3.6s var(--step-6) infinite;
+}
+/* Speaking right now — the card lifts and its rim burns. */
 .vx-card[data-active='true'] {
-  animation: vx-pulse-accent 600ms var(--step-2) infinite;
+  animation: vx-float 1.6s var(--step-2) infinite;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 85%, transparent))
+    drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.6));
+}
+.vx-card[data-active='true'] .vx-card__inner::after {
+  opacity: 1;
+  animation: vx-glint 1.5s var(--step-6) infinite;
 }
 .vx-card__pic {
   width: calc(var(--px) * 12);
   height: calc(var(--px) * 12);
   object-fit: cover;
-  background: var(--c-panel-lo);
-  box-shadow: inset 0 0 0 var(--px) var(--c-line-dim);
+  background: linear-gradient(180deg, #0a0912 0%, #1b192b 100%);
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--accent) 60%, black),
+    inset 0 2px 0 2px rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--fs-lg);
-  color: var(--c-line-dim);
+  color: color-mix(in srgb, var(--accent) 60%, #837fa4);
+}
+.vx-card--lg {
+  --cut: var(--chamfer-lg);
 }
 .vx-card--lg .vx-card__pic {
   width: calc(var(--px) * 20);
