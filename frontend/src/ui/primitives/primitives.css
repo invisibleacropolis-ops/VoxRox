@@ -140,3 +140,109 @@
   content: '\25B8';
   color: var(--c-accent);
 }
+
+/* ---------- PixelWindow ------------------------------------------- */
+.vx-window {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+.vx-window__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-1);
+  padding: var(--gap-1) var(--gap-2);
+  background: var(--c-line);
+  color: var(--c-void);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  user-select: none;
+}
+.vx-window__title {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vx-window__close {
+  padding: 0 var(--gap-1);
+  background: var(--c-void);
+  color: var(--c-line);
+  box-shadow: 0 0 0 var(--px) var(--c-void);
+}
+.vx-window__close:hover {
+  background: var(--c-bad);
+  color: var(--c-void);
+}
+.vx-window__body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--gap-2);
+  overflow: auto;
+}
+.vx-window__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--gap-1);
+  padding: var(--gap-1) var(--gap-2);
+  border-top: var(--px) solid var(--c-line-dim);
+}
+.vx-window-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gap-3);
+  background: rgba(7, 6, 12, 0.82);
+}
+
+/* ---------- PixelTabs --------------------------------------------- */
+.vx-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--gap-3);
+  padding: var(--gap-1) var(--gap-2) 0;
+  border-bottom: calc(var(--px) * 2) solid var(--c-line);
+  background: var(--c-void);
+}
+.vx-tab {
+  position: relative;
+  padding: var(--gap-1) var(--gap-2);
+  background: transparent;
+  color: var(--c-line-dim);
+  font-size: var(--fs-md);
+  text-transform: none;
+  letter-spacing: 1px;
+  box-shadow: none;
+  transition: color var(--dur-fast) var(--step-2);
+}
+.vx-tab:hover:not(:disabled) {
+  color: var(--c-line);
+  background: transparent;
+}
+.vx-tab[aria-selected='true'] {
+  color: var(--c-accent);
+}
+.vx-tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--px) * -2);
+  height: calc(var(--px) * 2);
+  background: var(--c-accent);
+}
+.vx-tab:disabled {
+  color: var(--c-panel-hi);
+  background: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+}
