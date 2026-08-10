@@ -7,6 +7,7 @@ import type {
   Project,
   ProjectSummary,
   SequencerSettings,
+  ServerSettings,
   TagGroup,
   VoiceDesign,
   VoiceVocab,
@@ -55,6 +56,7 @@ export const api = {
   // vocabulary + engine
   getTags: () => request<{ groups: TagGroup[] }>('/api/tags'),
   getVoiceVocab: () => request<VoiceVocab>('/api/voice-vocab'),
+  getServerSettings: () => request<ServerSettings>('/api/settings'),
   getEngineStatus: () => request<EngineStatus>('/api/engine/status'),
   warmUpEngine: () => request<EngineStatus>('/api/engine/warmup', { method: 'POST' }),
 

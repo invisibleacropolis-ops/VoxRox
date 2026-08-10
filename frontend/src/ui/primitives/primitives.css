@@ -46,6 +46,8 @@
   );
   transform: translateX(-170%);
   opacity: 0;
+  /* Settings can mute every sweep at once by zeroing this. */
+  filter: opacity(var(--glint-opacity, 1));
 }
 /* Ambient drift for panels and cards — slow, always alive. */
 .vx-glint--ambient::after {
@@ -142,12 +144,23 @@
     calc(var(--px) * 1) calc(var(--px) * 1) 0 0 var(--c-shadow),
     calc(var(--px) * 2) calc(var(--px) * 2) 0 0 rgba(0, 0, 0, 0.45);
 }
+/* Dithered edge: a strict 1px-on / 1px-off checker rather than a dashed
+   border, so it reads as a stipple pattern the way an 8-bit frame would.
+   Four edge gradients instead of `border`, because border-style: dashed
+   cannot be driven down to a single-pixel period. */
 .vx-frame--dashed {
-  background: transparent;
-  padding: 0;
+  background-color: transparent;
+  padding: 2px;
   clip-path: none;
-  border: 3px dashed var(--m-gold);
-  filter: drop-shadow(0 0 3px rgba(201, 148, 51, 0.25));
+  border: none;
+  background-image:
+    repeating-linear-gradient(90deg, var(--m-gold) 0 1px, transparent 1px 2px),
+    repeating-linear-gradient(90deg, var(--m-gold) 0 1px, transparent 1px 2px),
+    repeating-linear-gradient(180deg, var(--m-gold) 0 1px, transparent 1px 2px),
+    repeating-linear-gradient(180deg, var(--m-gold) 0 1px, transparent 1px 2px);
+  background-size: 100% 2px, 100% 2px, 2px 100%, 2px 100%;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+  background-repeat: no-repeat;
 }
 .vx-frame--dashed > .vx-frame__face {
   background: transparent;

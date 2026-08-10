@@ -151,6 +151,35 @@ export interface EngineStatus {
   capabilities: string[];
 }
 
+export interface ServerSettings {
+  paths: {
+    dataDir: string;
+    profiles: string;
+    projects: string;
+    portraits: string;
+    samples: string;
+    renders: string;
+    previewTmp: string;
+  };
+  audio: {
+    sampleRate: number;
+    channels: number;
+    format: string;
+    encoding: string;
+    waveformBuckets: number;
+  };
+  generation: {
+    numStepMin: number;
+    numStepMax: number;
+    numStepDefault: number;
+    speedMin: number;
+    speedMax: number;
+    speedDefault: number;
+    durationMaxSec: number;
+  };
+  env: Record<string, string>;
+}
+
 export interface PreviewResult {
   url: string;
   durationSec: number;

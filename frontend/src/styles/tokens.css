@@ -27,12 +27,15 @@
   --c-magic: #b48cf2;
 
   /* --- type ------------------------------------------------------- */
-  --font-px: 'Press Start 2P', 'VT323', 'Courier New', ui-monospace, monospace;
-  --fs-xs: 10px;
-  --fs-sm: 12px;
-  --fs-md: 14px;
-  --fs-lg: 18px;
-  --fs-xl: 24px;
+  /* Default stack; overridden per theme in fonts.css via [data-font]. */
+  --font-px: 'Press Start 2P', 'DotGothic16', 'Courier New', monospace;
+  /* Sizes scale with the chosen face — each pixel font has a very different
+     natural size per em, so a fixed px ladder looks wrong across themes. */
+  --fs-xs: calc(10px * var(--font-scale, 1));
+  --fs-sm: calc(12px * var(--font-scale, 1));
+  --fs-md: calc(14px * var(--font-scale, 1));
+  --fs-lg: calc(18px * var(--font-scale, 1));
+  --fs-xl: calc(24px * var(--font-scale, 1));
   --lh: 1.6;
 
   /* --- motion ----------------------------------------------------- */

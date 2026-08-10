@@ -73,7 +73,11 @@ button {
   background: var(--c-accent);
 }
 
-/* Full-screen CRT scanlines + vignette. Purely decorative. */
+/* Full-screen CRT scanlines + vignette. Purely decorative, and switchable
+   from Settings via data-scanlines on <html>. */
+:root[data-scanlines='off'] .vx-crt::after {
+  display: none;
+}
 .vx-crt::after {
   content: '';
   position: fixed;

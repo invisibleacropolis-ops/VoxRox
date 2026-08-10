@@ -1,0 +1,74 @@
+/* =====================================================================
+   Vendored pixel typefaces — all SIL Open Font License 1.1.
+   Files and their OFL texts live in public/fonts/, served locally so the
+   app never reaches out to a font CDN at runtime.
+   ===================================================================== */
+
+/* 8-bit arcade. Squarish, uniform stroke, no descender overshoot. */
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('/fonts/PressStart2P-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Compact 16-bit UI face — reads well at small sizes in dense panels. */
+@font-face {
+  font-family: 'Silkscreen';
+  src: url('/fonts/Silkscreen-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+/* CRT terminal. Taller x-height, good for long transcript text. */
+@font-face {
+  font-family: 'VT323';
+  src: url('/fonts/VT323-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Japanese-console dot font with full CJK coverage — the only vendored face
+   that can render the Chinese dialect names in the voice vocabulary. */
+@font-face {
+  font-family: 'DotGothic16';
+  src: url('/fonts/DotGothic16-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+/* ---------------------------------------------------------------------
+   Font themes. `data-font` on <html> selects the stack; DotGothic16 always
+   trails as the CJK fallback so 四川话 renders in every theme.
+   Each face has its own natural size, so the theme also carries a scale
+   multiplier — Press Start 2P is huge per em, Silkscreen and VT323 tiny.
+   --------------------------------------------------------------------- */
+:root {
+  --font-scale: 1;
+}
+
+:root[data-font='press-start'] {
+  --font-px: 'Press Start 2P', 'DotGothic16', 'Courier New', monospace;
+  --font-scale: 0.82;
+}
+:root[data-font='silkscreen'] {
+  --font-px: 'Silkscreen', 'DotGothic16', 'Courier New', monospace;
+  --font-scale: 1.12;
+}
+:root[data-font='vt323'] {
+  --font-px: 'VT323', 'DotGothic16', 'Courier New', monospace;
+  --font-scale: 1.34;
+}
+:root[data-font='dotgothic'] {
+  --font-px: 'DotGothic16', 'Courier New', monospace;
+  --font-scale: 1.12;
+}
+/* The pre-pixel-font stack, kept as an alternate. */
+:root[data-font='system'] {
+  --font-px: ui-monospace, 'Cascadia Mono', 'Courier New', monospace;
+  --font-scale: 1;
+}

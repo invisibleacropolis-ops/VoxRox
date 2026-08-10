@@ -259,3 +259,37 @@ button.vx-card:focus-visible .vx-card__inner::after {
   padding: var(--gap-2);
   text-align: center;
 }
+
+/* Settings ------------------------------------------------------------ */
+.vx-settings {
+  height: 100%;
+  min-height: 0;
+}
+.vx-settings__body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  align-content: start;
+  /* Panels size to their content instead of stretching to the tallest in the
+     row, which was clipping the last entry of the shorter ones. */
+  align-items: start;
+  gap: var(--gap-2);
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--gap-2);
+}
+/* Values wrap rather than truncate. An earlier `direction: rtl` trick
+   truncated paths from the left but reversed any mixed-content run —
+   "16–32 (default 32)" rendered as "32) 32-16" — so full paths are worth
+   more than one tidy line. */
+.vx-path {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: right;
+  color: var(--m-gold-hi);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+}
+.vx-archive-row {
+  align-items: start;
+}

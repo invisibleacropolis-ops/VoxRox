@@ -11,3 +11,4 @@ dist/
 data/
 .vite/
 *.local
+/vx-*.png

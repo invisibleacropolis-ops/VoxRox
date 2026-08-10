@@ -69,6 +69,30 @@ backend/.venv/Scripts/python -m pytest backend/tests -m gpu
 On a 6 GB GPU, drop **Diffusion steps** to 16 in the turn editor if you hit
 out-of-memory during generation. Engine load errors surface on the Settings screen.
 
+## Appearance
+
+The **Settings** screen carries everything adjustable: interface font, glint frame
+rate, CRT scanlines, engine status and warm-up, plus the resolved on-disk paths for
+sessions, samples and rendered audio, and the fixed audio contract. Appearance
+preferences persist in `localStorage` under `voxrox.ui`; paths and audio come from
+`GET /api/settings` so they always reflect the running server.
+
+### Bundled typefaces
+
+Four pixel faces ship in `frontend/public/fonts/`, served locally — the app never
+calls out to a font CDN. All are SIL Open Font License 1.1, with each licence kept
+beside its font as `OFL-<Family>.txt`.
+
+| Face | Character |
+|---|---|
+| Press Start 2P | 8-bit arcade; the default |
+| Silkscreen | 16-bit UI, compact in dense panels |
+| VT323 | CRT terminal, tall, good for long text |
+| DotGothic16 | Dot-matrix console, full CJK — renders the Chinese dialect names |
+
+Each theme carries a scale multiplier, because the faces differ sharply in natural
+size per em; a fixed pixel ladder looks wrong across them.
+
 ## Tags
 
 The non-verbal tag vocabulary is defined once in `backend/voxrox/tags.py` and served at
