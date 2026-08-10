@@ -60,7 +60,7 @@
     rgba(255, 255, 255, 0.5) 50%,
     transparent 58%
   );
-  animation: vx-glint 1.8s var(--step-6) infinite;
+  animation: vx-glint calc(var(--glint-dur) * 0.5) step-end infinite;
 }
 .vx-turn__text {
   font-size: var(--fs-md);

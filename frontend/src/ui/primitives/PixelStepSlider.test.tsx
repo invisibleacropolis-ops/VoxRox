@@ -33,6 +33,11 @@ describe('PixelStepSlider', () => {
     expect(notches[0]).toHaveAttribute('data-active', 'false');
   });
 
+  it('fills the run to the notch position', () => {
+    render(<PixelStepSlider label="Age" options={AGES} index={2} onChange={() => {}} />);
+    expect(screen.getByTestId('slider-fill')).toHaveStyle({ width: '40%' }); // 2 of 5
+  });
+
   it('clamps an out-of-range index into the array', () => {
     render(<PixelStepSlider label="Age" options={AGES} index={99} onChange={() => {}} />);
     expect(screen.getByText('elderly')).toBeInTheDocument();

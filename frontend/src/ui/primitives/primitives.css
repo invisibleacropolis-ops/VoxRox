@@ -50,11 +50,11 @@
 /* Ambient drift for panels and cards — slow, always alive. */
 .vx-glint--ambient::after {
   opacity: 1;
-  animation: vx-glint 6s var(--step-6) infinite;
+  animation: vx-glint var(--glint-dur) step-end infinite;
 }
 .vx-glint--slow::after {
   opacity: 1;
-  animation: vx-glint 9s var(--step-6) infinite;
+  animation: vx-glint calc(var(--glint-dur) * 1.5) step-end infinite;
 }
 
 /* ---------- PixelFrame -------------------------------------------- */
@@ -294,14 +294,18 @@
 .vx-btn:hover:not(:disabled) .vx-btn__face::after,
 .vx-btn:focus-visible .vx-btn__face::after {
   opacity: 1;
-  animation: vx-glint 700ms var(--step-6);
+  animation: vx-glint var(--glint-dur-fast) step-end;
 }
-.vx-btn:active:not(:disabled) {
-  transform: translate(1px, 2px);
-  filter: none;
+/* Press: 8 held frames driven by a state flag rather than :active, so a fast
+   click still plays the whole cycle instead of being cut off on mouseup. */
+.vx-btn[data-pressing='true'] {
+  animation: vx-press var(--press-dur) step-end;
+}
+.vx-btn[data-pressing='true'] .vx-btn__face {
+  animation: vx-press-face var(--press-dur) step-end;
 }
 .vx-btn:active:not(:disabled) .vx-btn__face {
-  filter: brightness(0.82) saturate(1.1);
+  filter: brightness(0.88);
 }
 /* Dimmed but still legible as a control — a disabled button the user cannot
    see is worse than one they cannot press. */
@@ -408,7 +412,7 @@
 .vx-btn[aria-pressed='true'] .vx-btn__face::after,
 .vx-btn[data-selected='true'] .vx-btn__face::after {
   opacity: 1;
-  animation: vx-glint 3.4s var(--step-6) infinite;
+  animation: vx-glint var(--glint-dur) step-end infinite;
 }
 
 /* ---------- PixelWindow ------------------------------------------- */
@@ -539,52 +543,131 @@
 }
 
 /* ---------- Sliders ------------------------------------------------ */
+/* A recessed channel milled into the panel, a gold run showing how far the
+   value has travelled, and a chamfered thumb with its own bevel + glint. */
 .vx-slider {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 2px;
-  padding: 2px 0;
+  padding: 3px 0 5px;
 }
 .vx-slider__label {
   grid-column: 1 / -1;
   font-size: var(--fs-xs);
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--m-steel-hi);
+  color: var(--m-bone-hi);
   display: flex;
   justify-content: space-between;
   gap: var(--gap-1);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
 }
 .vx-slider__value {
   color: var(--m-gold-hi);
-  text-shadow: 0 0 4px rgba(242, 193, 78, 0.4);
+  text-shadow: 0 0 5px rgba(242, 193, 78, 0.55);
+}
+
+/* Rail: outer casing plate, chamfered like every other surface. */
+.vx-slider__rail {
+  grid-column: 1 / -1;
+  position: relative;
+  height: calc(var(--px) * 5);
+  padding: 2px;
+  background: linear-gradient(
+    180deg,
+    var(--m-steel-lo) 0%,
+    var(--m-steel-dk) 60%,
+    #0d1016 100%
+  );
+  --cut: 3px;
+  clip-path: polygon(
+    var(--cut) 0%,
+    calc(100% - var(--cut)) 0%,
+    100% var(--cut),
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    var(--cut) 100%,
+    0% calc(100% - var(--cut)),
+    0% var(--cut)
+  );
+}
+/* Channel: the dark milled groove the run sits in. */
+.vx-slider__channel {
+  position: absolute;
+  inset: 2px;
+  background: linear-gradient(180deg, #05040a 0%, #14111d 55%, #1f1b2b 100%);
+  box-shadow:
+    inset 0 2px 0 0 rgba(0, 0, 0, 0.95),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+/* Run: warm bronze filling the travelled portion. Deliberately darker than
+   the thumb so the grip still reads where the two overlap. */
+.vx-slider__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    var(--m-gold) 0%,
+    var(--m-gold) 20%,
+    var(--m-gold-lo) 21%,
+    var(--m-gold-lo) 70%,
+    var(--m-gold-dk) 71%
+  );
+  box-shadow: inset 0 1px 0 0 rgba(255, 244, 207, 0.35);
 }
 .vx-slider__input {
   -webkit-appearance: none;
   appearance: none;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: calc(var(--px) * 3);
-  background: linear-gradient(180deg, #07060c 0%, #1b1a2b 50%, #2a2840 100%);
-  box-shadow:
-    inset 0 1px 0 0 rgba(0, 0, 0, 0.9),
-    inset 0 -1px 0 0 rgba(255, 255, 255, 0.12);
+  height: 100%;
+  margin: 0;
+  background: transparent;
   cursor: pointer;
 }
+.vx-slider__input::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 100%;
+}
+.vx-slider__input::-moz-range-track {
+  background: transparent;
+  height: 100%;
+}
+/* Thumb: a brass grip with a top specular, a dark lip and a knurl line. */
 .vx-slider__input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: calc(var(--px) * 3);
   height: calc(var(--px) * 6);
-  background: linear-gradient(
-    180deg,
-    var(--m-gold-spec) 0%,
-    var(--m-gold-hi) 25%,
-    var(--m-gold) 26%,
-    var(--m-gold-lo) 75%,
-    var(--m-gold-dk) 100%
-  );
-  box-shadow: 0 0 0 1px var(--c-void), 1px 1px 0 1px rgba(0, 0, 0, 0.6);
+  margin-top: calc(var(--px) * -0.75);
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0 40%,
+      rgba(0, 0, 0, 0.45) 40% 45%,
+      transparent 45% 55%,
+      rgba(0, 0, 0, 0.45) 55% 60%,
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      var(--m-gold-spec) 0%,
+      var(--m-gold-spec) 16%,
+      var(--m-gold-hi) 17%,
+      var(--m-gold) 45%,
+      var(--m-gold-lo) 46%,
+      var(--m-gold-lo) 82%,
+      var(--m-gold-dk) 83%
+    );
+  box-shadow:
+    0 0 0 2px var(--c-void),
+    2px 3px 0 0 rgba(0, 0, 0, 0.75),
+    0 0 8px 1px rgba(255, 244, 207, 0.5);
 }
 .vx-slider__input::-moz-range-thumb {
   border: none;
@@ -593,26 +676,49 @@
   background: linear-gradient(
     180deg,
     var(--m-gold-spec) 0%,
-    var(--m-gold) 40%,
-    var(--m-gold-dk) 100%
+    var(--m-gold-hi) 17%,
+    var(--m-gold) 45%,
+    var(--m-gold-lo) 46%,
+    var(--m-gold-dk) 83%
   );
-  box-shadow: 0 0 0 1px var(--c-void);
+  box-shadow:
+    0 0 0 1px var(--c-void),
+    1px 2px 0 0 rgba(0, 0, 0, 0.7),
+    0 0 7px 0 rgba(242, 193, 78, 0.4);
+}
+.vx-slider__input:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 1px var(--m-bone-spec),
+    1px 2px 0 0 rgba(0, 0, 0, 0.7),
+    0 0 10px 1px rgba(242, 193, 78, 0.85);
 }
 .vx-slider__input:disabled {
   cursor: not-allowed;
-  opacity: 0.4;
 }
+.vx-slider--disabled {
+  filter: grayscale(0.7) brightness(0.7);
+}
+
+/* Notch pips: struck marks along the channel, the active one lit. */
 .vx-slider__notches {
   grid-column: 1 / -1;
   display: flex;
   justify-content: space-between;
-  font-size: 8px;
-  color: var(--m-steel-lo);
-  letter-spacing: 0;
+  align-items: flex-start;
+  margin-top: 2px;
+  padding: 0 1px;
+}
+.vx-slider__notch {
+  width: 3px;
+  height: 6px;
+  background: linear-gradient(180deg, var(--m-bone-lo) 0%, var(--m-steel-dk) 100%);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.9);
 }
 .vx-slider__notch[data-active='true'] {
-  color: var(--m-gold-hi);
-  text-shadow: 0 0 4px rgba(242, 193, 78, 0.6);
+  height: 9px;
+  margin-top: -1px;
+  background: linear-gradient(180deg, var(--m-gold-spec) 0%, var(--m-gold) 60%, var(--m-gold-lo) 100%);
+  box-shadow: 0 0 7px 1px rgba(242, 193, 78, 0.95);
 }
 
 /* ---------- Text area ---------------------------------------------- */
@@ -764,7 +870,7 @@
     rgba(255, 255, 255, 0.75) 50%,
     transparent 58%
   );
-  animation: vx-glint 3s var(--step-6) infinite;
+  animation: vx-glint var(--glint-dur) step-end infinite;
 }
 .vx-swatch__custom {
   position: absolute;

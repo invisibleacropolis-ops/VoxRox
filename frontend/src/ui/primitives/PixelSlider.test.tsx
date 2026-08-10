@@ -40,6 +40,27 @@ describe('PixelSlider', () => {
     expect(slider).toHaveValue('300');
   });
 
+  it('fills the run to the value fraction', () => {
+    render(
+      <PixelSlider label="Speed" min={0} max={200} step={1} value={50} onChange={() => {}} />,
+    );
+    expect(screen.getByTestId('slider-fill')).toHaveStyle({ width: '25%' });
+  });
+
+  it('clamps the fill for an out-of-range value', () => {
+    render(
+      <PixelSlider label="Speed" min={0} max={10} step={1} value={99} onChange={() => {}} />,
+    );
+    expect(screen.getByTestId('slider-fill')).toHaveStyle({ width: '100%' });
+  });
+
+  it('does not divide by zero when min equals max', () => {
+    render(
+      <PixelSlider label="Speed" min={5} max={5} step={1} value={5} onChange={() => {}} />,
+    );
+    expect(screen.getByTestId('slider-fill')).toHaveStyle({ width: '0%' });
+  });
+
   it('can be disabled', () => {
     render(
       <PixelSlider label="Speed" min={0} max={2} step={0.1} value={1} onChange={() => {}} disabled />,

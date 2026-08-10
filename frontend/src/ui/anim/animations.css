@@ -78,15 +78,93 @@
   }
 }
 
-/* Specular sweep. Travels well past both edges so the band enters and
-   leaves cleanly instead of popping in mid-surface. */
+/* Specular sweep — exactly 24 discrete frames.
+   Every 1/24 (4.1667%) carries its own position + intensity, and the timing
+   function is step-end, so each stop HOLDS until the next one. That gives 24
+   real frames rather than 24 substeps between each keyframe pair.
+   Intensity envelope: enters faint at the edge, builds to full across the
+   middle of the travel, then falls away before it exits. */
 @keyframes vx-glint {
+  0%      { transform: translateX(-170%);   opacity: 0.10; }
+  4.167%  { transform: translateX(-155.2%); opacity: 0.18; }
+  8.333%  { transform: translateX(-140.4%); opacity: 0.28; }
+  12.5%   { transform: translateX(-125.7%); opacity: 0.38; }
+  16.667% { transform: translateX(-110.9%); opacity: 0.48; }
+  20.833% { transform: translateX(-96.1%);  opacity: 0.58; }
+  25%     { transform: translateX(-81.3%);  opacity: 0.68; }
+  29.167% { transform: translateX(-66.5%);  opacity: 0.78; }
+  33.333% { transform: translateX(-51.7%);  opacity: 0.86; }
+  37.5%   { transform: translateX(-37.0%);  opacity: 0.92; }
+  41.667% { transform: translateX(-22.2%);  opacity: 0.97; }
+  45.833% { transform: translateX(-7.4%);   opacity: 1; }
+  50%     { transform: translateX(7.4%);    opacity: 1; }
+  54.167% { transform: translateX(22.2%);   opacity: 0.95; }
+  58.333% { transform: translateX(37.0%);   opacity: 0.88; }
+  62.5%   { transform: translateX(51.7%);   opacity: 0.78; }
+  66.667% { transform: translateX(66.5%);   opacity: 0.66; }
+  70.833% { transform: translateX(81.3%);   opacity: 0.54; }
+  75%     { transform: translateX(96.1%);   opacity: 0.42; }
+  79.167% { transform: translateX(110.9%);  opacity: 0.30; }
+  83.333% { transform: translateX(125.7%);  opacity: 0.20; }
+  87.5%   { transform: translateX(140.4%);  opacity: 0.12; }
+  91.667% { transform: translateX(155.2%);  opacity: 0.06; }
+  95.833% { transform: translateX(170%);    opacity: 0; }
+}
+
+/* Button press — 8 held frames: bite down hard, ease back up. */
+@keyframes vx-press {
+  0%    { transform: translate(0, 0); }
+  12.5% { transform: translate(0.5px, 1px); }
+  25%   { transform: translate(1px, 2px); }
+  37.5% { transform: translate(1px, 3px); }
+  50%   { transform: translate(1px, 3px); }
+  62.5% { transform: translate(1px, 2px); }
+  75%   { transform: translate(0.5px, 1px); }
+  87.5% { transform: translate(0, 0.5px); }
+}
+
+/* The face darkens as it sinks while the LABEL lights up and glows —
+   the filament flaring as the contact closes. */
+@keyframes vx-press-face {
   0% {
-    transform: translateX(-170%);
+    filter: brightness(1);
+    color: #33240f;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
   }
-  55%,
-  100% {
-    transform: translateX(170%);
+  12.5% {
+    filter: brightness(0.94);
+    color: #6b5220;
+    text-shadow: 0 0 3px rgba(255, 240, 190, 0.5);
+  }
+  25% {
+    filter: brightness(0.88);
+    color: #b89a4e;
+    text-shadow: 0 0 6px rgba(255, 244, 207, 0.75);
+  }
+  37.5% {
+    filter: brightness(0.84);
+    color: #fff4cf;
+    text-shadow: 0 0 9px rgba(255, 244, 207, 1), 0 0 16px rgba(242, 193, 78, 0.85);
+  }
+  50% {
+    filter: brightness(0.84);
+    color: #fffdf5;
+    text-shadow: 0 0 11px rgba(255, 253, 245, 1), 0 0 20px rgba(242, 193, 78, 0.95);
+  }
+  62.5% {
+    filter: brightness(0.88);
+    color: #fff4cf;
+    text-shadow: 0 0 8px rgba(255, 244, 207, 0.85), 0 0 14px rgba(242, 193, 78, 0.6);
+  }
+  75% {
+    filter: brightness(0.94);
+    color: #b89a4e;
+    text-shadow: 0 0 5px rgba(255, 244, 207, 0.5);
+  }
+  87.5% {
+    filter: brightness(0.98);
+    color: #6b5220;
+    text-shadow: 0 0 2px rgba(255, 244, 207, 0.25);
   }
 }
 
@@ -255,6 +333,8 @@
   .vx-glint--ambient::after,
   .vx-glint--slow::after,
   .vx-btn .vx-btn__face::after,
+  .vx-btn[data-pressing='true'],
+  .vx-btn[data-pressing='true'] .vx-btn__face,
   .vx-swatch::after {
     animation: none !important;
   }

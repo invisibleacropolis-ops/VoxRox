@@ -68,7 +68,7 @@ button.vx-card:hover:not(:disabled) {
 button.vx-card:hover:not(:disabled) .vx-card__inner::after,
 button.vx-card:focus-visible .vx-card__inner::after {
   opacity: 1;
-  animation: vx-glint 780ms var(--step-6);
+  animation: vx-glint var(--glint-dur-fast) step-end;
 }
 .vx-card[aria-pressed='true'] {
   filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 70%, transparent))
@@ -76,7 +76,7 @@ button.vx-card:focus-visible .vx-card__inner::after {
 }
 .vx-card[aria-pressed='true'] .vx-card__inner::after {
   opacity: 1;
-  animation: vx-glint 3.6s var(--step-6) infinite;
+  animation: vx-glint var(--glint-dur) step-end infinite;
 }
 /* Speaking right now — the card lifts and its rim burns. */
 .vx-card[data-active='true'] {
@@ -86,7 +86,7 @@ button.vx-card:focus-visible .vx-card__inner::after {
 }
 .vx-card[data-active='true'] .vx-card__inner::after {
   opacity: 1;
-  animation: vx-glint 1.5s var(--step-6) infinite;
+  animation: vx-glint calc(var(--glint-dur) * 0.5) step-end infinite;
 }
 .vx-card__pic {
   width: calc(var(--px) * 12);

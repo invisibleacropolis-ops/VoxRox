@@ -43,6 +43,17 @@
   --step-4: steps(4, end);
   --step-6: steps(6, end);
 
+  /* Glint is authored as 24 held frames. Duration is expressed per-frame so
+     the rate is a real dial: --glint-frame is seconds-per-frame, and
+     1 / --glint-frame is the frame rate. 0.5s per frame = 2 fps = 12s sweep. */
+  --glint-frame: 0.5s;
+  --glint-dur: calc(24 * var(--glint-frame));
+  /* Input responses stay snappy — a hover flash must land while the pointer
+     is still there, so it runs its 24 frames fast rather than ambiently. */
+  --glint-frame-fast: 0.03s;
+  --glint-dur-fast: calc(24 * var(--glint-frame-fast));
+  --press-dur: 160ms;
+
   /* --- metal ------------------------------------------------------- */
   /* Four stops per metal: specular, light, body, shadow. Hard-stopped in
      gradients so the fill bands like dithered pixel art instead of smearing. */
