@@ -21,10 +21,11 @@ def create_app() -> FastAPI:
     def health() -> dict:
         return {"status": "ok", "sampleRate": SAMPLE_RATE}
 
-    from voxrox.routers import profiles, vocab
+    from voxrox.routers import profiles, projects, vocab
 
     app.include_router(vocab.router)
     app.include_router(profiles.router)
+    app.include_router(projects.router)
     app.mount("/media", StaticFiles(directory=settings.media_dir), name="media")
     return app
 
