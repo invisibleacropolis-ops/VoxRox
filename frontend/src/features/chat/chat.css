@@ -1,0 +1,102 @@
+.vx-chat {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) 1fr;
+  gap: var(--gap-2);
+  height: 100%;
+  min-height: 0;
+}
+.vx-chat__rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+  min-height: 0;
+}
+.vx-chat__cards {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+}
+.vx-chat__log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-2);
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: var(--gap-1);
+}
+.vx-turn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+}
+.vx-turn[data-active='true'] {
+  animation: vx-pulse-accent 600ms var(--step-2) infinite;
+}
+.vx-turn__text {
+  font-size: var(--fs-md);
+  line-height: var(--lh);
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: var(--gap-1);
+  background: var(--c-panel-lo);
+  box-shadow: inset 0 0 0 var(--px) var(--c-line-dim);
+}
+.vx-turn__tag {
+  color: var(--c-magic);
+}
+.vx-turn__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-1);
+  font-size: var(--fs-xs);
+  color: var(--c-line-dim);
+}
+.vx-editor {
+  display: grid;
+  grid-template-columns: 1fr minmax(160px, 220px);
+  gap: var(--gap-2);
+  min-height: 0;
+}
+.vx-editor__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+  min-width: 0;
+}
+.vx-editor__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-1);
+  min-height: 0;
+  overflow-y: auto;
+}
+.vx-tagpanel__group {
+  margin-bottom: var(--gap-1);
+}
+.vx-tagpanel__label {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--c-line-dim);
+  margin-bottom: calc(var(--px));
+}
+.vx-tagpanel__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--px));
+}
+.vx-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--gap-2);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.vx-addbtn {
+  position: sticky;
+  bottom: 0;
+}
