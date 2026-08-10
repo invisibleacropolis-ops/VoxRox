@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voxrox"
+version = "0.1.0"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+    "python-multipart>=0.0.9",
+    "soundfile>=0.12",
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "httpx>=0.27"]
+engine = ["omnivoice"]
+
+[tool.setuptools.packages.find]
+include = ["voxrox*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["gpu: requires a loaded OmniVoice model and CUDA device"]
+addopts = "-m 'not gpu'"
