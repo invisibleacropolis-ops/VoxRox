@@ -339,3 +339,44 @@
 .vx-scroll--x {
   overflow-x: auto;
 }
+
+/* ---------- Transport ---------------------------------------------- */
+.vx-transport {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-1);
+  padding: calc(var(--px)) var(--gap-1);
+  background: var(--c-panel-lo);
+  box-shadow: inset 0 0 0 var(--px) var(--c-line-dim);
+}
+.vx-transport__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-xs);
+  color: var(--c-line-dim);
+}
+.vx-transport__bar {
+  flex: 2;
+  height: calc(var(--px) * 3);
+  background: var(--c-void);
+  box-shadow: inset 0 0 0 var(--px) var(--c-line-dim);
+  cursor: pointer;
+  position: relative;
+}
+.vx-transport__fill {
+  height: 100%;
+  background: var(--c-accent);
+  transition: width var(--dur-fast) var(--step-4);
+}
+.vx-transport__time {
+  font-size: var(--fs-xs);
+  color: var(--c-accent);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.vx-transport--empty {
+  color: var(--c-panel-hi);
+}
