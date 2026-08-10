@@ -1,0 +1,49 @@
+:root {
+  /* --- grid ------------------------------------------------------- */
+  --px: 4px;            /* one logical pixel */
+  --grid: 8px;          /* base spacing step  */
+  --gap-1: 8px;
+  --gap-2: 16px;
+  --gap-3: 24px;
+  --gap-4: 32px;
+
+  /* --- palette (dark RPG menu) ------------------------------------ */
+  --c-void: #07060c;
+  --c-ink: #100e1a;
+  --c-panel: #1b192b;
+  --c-panel-hi: #2b2842;
+  --c-panel-lo: #131120;
+  --c-line: #eae7f7;
+  --c-line-dim: #837fa4;
+  --c-shadow: #04030a;
+
+  --c-accent: #f2c14e;
+  --c-accent-lo: #a5761f;
+  --c-good: #6fe3a1;
+  --c-bad: #f2645a;
+  --c-cool: #63c7f2;
+  --c-magic: #b48cf2;
+
+  /* --- type ------------------------------------------------------- */
+  --font-px: 'Press Start 2P', 'VT323', 'Courier New', ui-monospace, monospace;
+  --fs-xs: 10px;
+  --fs-sm: 12px;
+  --fs-md: 14px;
+  --fs-lg: 18px;
+  --fs-xl: 24px;
+  --lh: 1.6;
+
+  /* --- motion ----------------------------------------------------- */
+  --dur-fast: 90ms;
+  --dur: 160ms;
+  --dur-slow: 280ms;
+  --step-2: steps(2, end);
+  --step-4: steps(4, end);
+  --step-6: steps(6, end);
+
+  /* --- borders ---------------------------------------------------- */
+  --border-w: var(--px);
+  --z-window: 100;
+  --z-modal: 200;
+  --z-overlay: 900;
+}

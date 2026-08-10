@@ -1,0 +1,111 @@
+/* Window "unfurl" — the RPG message-box open. */
+@keyframes vx-window-open {
+  0% {
+    transform: scaleX(0.25) scaleY(0.04);
+    opacity: 1;
+  }
+  40% {
+    transform: scaleX(1) scaleY(0.12);
+  }
+  70% {
+    transform: scaleX(1) scaleY(0.7);
+  }
+  100% {
+    transform: scaleX(1) scaleY(1);
+  }
+}
+
+@keyframes vx-window-close {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scaleX(1) scaleY(0.2);
+  }
+  100% {
+    transform: scaleX(0.2) scaleY(0.03);
+    opacity: 0;
+  }
+}
+
+@keyframes vx-panel-slide-in {
+  0% {
+    transform: translateX(calc(var(--px) * -6));
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes vx-pop-in {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes vx-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes vx-marquee-dash {
+  to {
+    background-position: calc(var(--px) * 8) 0;
+  }
+}
+
+@keyframes vx-pulse-accent {
+  0%,
+  100% {
+    box-shadow: 0 0 0 var(--px) var(--c-accent);
+  }
+  50% {
+    box-shadow: 0 0 0 var(--px) var(--c-accent-lo);
+  }
+}
+
+.vx-anim-open {
+  animation: vx-window-open var(--dur-slow) var(--step-6) both;
+  transform-origin: center center;
+}
+.vx-anim-close {
+  animation: vx-window-close var(--dur) var(--step-4) both;
+  transform-origin: center center;
+}
+.vx-anim-slide-in {
+  animation: vx-panel-slide-in var(--dur) var(--step-4) both;
+}
+.vx-anim-pop {
+  animation: vx-pop-in var(--dur) var(--step-4) both;
+}
+.vx-anim-blink {
+  animation: vx-blink 1s var(--step-2) infinite;
+}
+.vx-anim-busy {
+  animation: vx-pulse-accent 600ms var(--step-2) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vx-anim-open,
+  .vx-anim-close,
+  .vx-anim-slide-in,
+  .vx-anim-pop,
+  .vx-anim-blink,
+  .vx-anim-busy {
+    animation: none !important;
+  }
+}
