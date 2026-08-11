@@ -1,10 +1,10 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { api } from '@/api/client';
 import type { Profile, Turn } from '@/api/types';
 import { useVocabStore } from '@/state/vocabStore';
-import { TurnEditor } from './TurnEditor';
+import { AUTOSAVE_MS, TurnEditor } from './TurnEditor';
 
 const PROFILE: Profile = {
   id: 'p1', name: 'Ivy', createdAt: 'x', updatedAt: 'x', portraitUrl: null,
@@ -147,6 +147,96 @@ describe('TurnEditor', () => {
     renderEditor({ turn: { ...TURN, text: 'Hi' } });
     expect(screen.getAllByRole('slider')).toHaveLength(3);
     expect(screen.getByText('auto')).toBeInTheDocument();
+  });
+
+  it('autosaves the draft a beat after typing stops', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const props = renderEditor();
+      await userEvent.type(screen.getByLabelText('Turn text'), 'Hi');
+      expect(props.onSave).not.toHaveBeenCalled();
+      await act(async () => {
+        vi.advanceTimersByTime(AUTOSAVE_MS + 50);
+      });
+      expect(props.onSave).toHaveBeenCalledWith({
+        text: 'Hi',
+        params: { numStep: 32, speed: 1, duration: null },
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('flushes the draft on unmount so closing never drops keystrokes', async () => {
+    const props = renderEditor();
+    await userEvent.type(screen.getByLabelText('Turn text'), 'Unsaved');
+    cleanup();
+    expect(props.onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ text: 'Unsaved' }),
+    );
+  });
+
+  it('does not autosave when nothing changed', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const props = renderEditor({ turn: { ...TURN, text: 'Hi' } });
+      await act(async () => {
+        vi.advanceTimersByTime(AUTOSAVE_MS * 3);
+      });
+      expect(props.onSave).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('stops autosaving once the server echoes the draft back', async () => {
+    // The saved turn comes back as a freshly parsed object; comparing params
+    // by reference kept it permanently "dirty" and looped the autosave.
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const onSave = vi.fn().mockResolvedValue(undefined);
+      const saved: Turn = { ...TURN, text: 'Hi', params: { ...TURN.params } };
+      const { rerender } = render(
+        <TurnEditor
+          open
+          turn={TURN}
+          profile={PROFILE}
+          rendering={false}
+          onSave={onSave}
+          onRender={vi.fn()}
+          onClose={vi.fn()}
+        />,
+      );
+      await userEvent.type(screen.getByLabelText('Turn text'), 'Hi');
+      await act(async () => {
+        vi.advanceTimersByTime(AUTOSAVE_MS + 50);
+      });
+      expect(onSave).toHaveBeenCalledTimes(1);
+
+      // Server echo: same values, brand new object identities.
+      rerender(
+        <TurnEditor
+          open
+          turn={saved}
+          profile={PROFILE}
+          rendering={false}
+          onSave={onSave}
+          onRender={vi.fn()}
+          onClose={vi.fn()}
+        />,
+      );
+      await act(async () => {
+        vi.advanceTimersByTime(AUTOSAVE_MS * 4);
+      });
+      expect(onSave).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('shows the autosave status in the title bar', () => {
+    renderEditor({ draftStatus: 'saving' });
+    expect(screen.getByTestId('draft-status')).toHaveTextContent('saving');
   });
 
   it('saves and closes on Save & close', async () => {

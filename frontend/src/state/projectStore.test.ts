@@ -17,10 +17,102 @@ function makeProject(overrides: Partial<Project> = {}): Project {
 }
 
 beforeEach(() => {
+  localStorage.clear();
   useProjectStore.setState({
-    summaries: [], current: null, loading: false, error: null, renderingTurnId: null,
+    summaries: [], current: null, loading: false, error: null,
+    renderingTurnId: null, editingTurnId: null, draftStatus: 'idle',
   });
   vi.restoreAllMocks();
+});
+
+describe('session persistence', () => {
+  it('remembers the open project so a reload can restore it', async () => {
+    vi.spyOn(api, 'getProject').mockResolvedValue(makeProject());
+    await useProjectStore.getState().open('proj1');
+    expect(JSON.parse(localStorage.getItem('voxrox.session')!).projectId).toBe('proj1');
+  });
+
+  it('restores the session on start', async () => {
+    localStorage.setItem(
+      'voxrox.session',
+      JSON.stringify({ projectId: 'proj1', editingTurnId: null }),
+    );
+    vi.spyOn(api, 'getProject').mockResolvedValue(makeProject());
+    await useProjectStore.getState().restoreSession();
+    expect(useProjectStore.getState().current?.id).toBe('proj1');
+  });
+
+  it('restores the turn that was being composed', async () => {
+    const draft = {
+      id: 't1', profileId: 'p1', text: 'half written',
+      params: { numStep: 32, speed: 1, duration: null },
+      voiceOverride: null, status: 'draft' as const, audio: null,
+      createdAt: 'x', updatedAt: 'x',
+    };
+    localStorage.setItem(
+      'voxrox.session',
+      JSON.stringify({ projectId: 'proj1', editingTurnId: 't1' }),
+    );
+    vi.spyOn(api, 'getProject').mockResolvedValue(makeProject({ turns: [draft] }));
+    await useProjectStore.getState().restoreSession();
+    expect(useProjectStore.getState().editingTurnId).toBe('t1');
+    expect(useProjectStore.getState().current?.turns[0].text).toBe('half written');
+  });
+
+  it('does not reopen the editor for a turn that has since been rendered', async () => {
+    const rendered = {
+      id: 't1', profileId: 'p1', text: 'done',
+      params: { numStep: 32, speed: 1, duration: null },
+      voiceOverride: null, status: 'rendered' as const,
+      audio: { url: '/a.wav', filename: 'a.wav', durationSec: 1,
+               sampleRate: 24000, peaks: [], renderedAt: 'x' },
+      createdAt: 'x', updatedAt: 'x',
+    };
+    localStorage.setItem(
+      'voxrox.session',
+      JSON.stringify({ projectId: 'proj1', editingTurnId: 't1' }),
+    );
+    vi.spyOn(api, 'getProject').mockResolvedValue(makeProject({ turns: [rendered] }));
+    await useProjectStore.getState().restoreSession();
+    expect(useProjectStore.getState().editingTurnId).toBeNull();
+  });
+
+  it('drops a stale pointer without destroying an open project', async () => {
+    localStorage.setItem(
+      'voxrox.session',
+      JSON.stringify({ projectId: 'gone', editingTurnId: null }),
+    );
+    const live = makeProject({ id: 'live' });
+    useProjectStore.setState({ current: live });
+    vi.spyOn(api, 'getProject').mockRejectedValue(new Error('404'));
+    await useProjectStore.getState().restoreSession();
+    expect(useProjectStore.getState().current?.id).toBe('live');
+    expect(JSON.parse(localStorage.getItem('voxrox.session')!).projectId).toBeNull();
+  });
+
+  it('does nothing when there is no stored session', async () => {
+    const spy = vi.spyOn(api, 'getProject');
+    await useProjectStore.getState().restoreSession();
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('saveDraft persists text and reports the save', async () => {
+    useProjectStore.setState({ current: makeProject() });
+    const spy = vi
+      .spyOn(api, 'updateTurn')
+      .mockResolvedValue(makeProject({ name: 'saved' }));
+    await useProjectStore.getState().saveDraft('t1', { text: 'typing' });
+    expect(spy).toHaveBeenCalledWith('proj1', 't1', { text: 'typing' });
+    expect(useProjectStore.getState().draftStatus).toBe('saved');
+  });
+
+  it('closing the session clears the pointer', async () => {
+    vi.spyOn(api, 'getProject').mockResolvedValue(makeProject());
+    await useProjectStore.getState().open('proj1');
+    useProjectStore.getState().close();
+    expect(useProjectStore.getState().current).toBeNull();
+    expect(JSON.parse(localStorage.getItem('voxrox.session')!).projectId).toBeNull();
+  });
 });
 
 describe('projectStore', () => {

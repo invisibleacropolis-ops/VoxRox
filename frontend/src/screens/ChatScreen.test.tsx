@@ -42,6 +42,9 @@ function makeProject(overrides: Partial<Project> = {}): Project {
 
 beforeEach(() => {
   vi.restoreAllMocks();
+  // The session pointer persists across tests in this file otherwise, and
+  // restoreSession would chase a project the next test never mocked.
+  localStorage.clear();
   useVocabStore.setState({
     tagGroups: [], loaded: true, engine: null,
     vocab: { genders: [], ages: [], pitches: [], styles: [],
@@ -51,7 +54,8 @@ beforeEach(() => {
     profiles: [makeProfile()], selectedId: null, loading: false, error: null,
   });
   useProjectStore.setState({
-    summaries: [], current: null, loading: false, error: null, renderingTurnId: null,
+    summaries: [], current: null, loading: false, error: null,
+    renderingTurnId: null, editingTurnId: null, draftStatus: 'idle',
   });
   vi.spyOn(api, 'listProjects').mockResolvedValue([]);
 });
@@ -135,6 +139,36 @@ describe('ChatScreen', () => {
     render(<ChatScreen />);
     await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
     expect(await screen.findByLabelText('Turn text')).toHaveValue('Hello there');
+  });
+
+  it('docks the editor in the transcript column, not the narrow rail', async () => {
+    // Regression: as a third child of the two-column .vx-chat grid the editor
+    // was auto-placed into row 2 of the ~200px rail column, crushing the text
+    // area against the left edge.
+    useProjectStore.setState({
+      current: makeProject({ participantIds: ['p1'], turns: [TURN] }),
+    });
+    const { container } = render(<ChatScreen />);
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+    const editor = await screen.findByRole('dialog', { name: /Editing turn/ });
+    expect(editor.closest('.vx-chat__main')).not.toBeNull();
+    expect(editor.closest('.vx-chat__rail')).toBeNull();
+
+    // and it must not be a direct child of the grid itself
+    const grid = container.querySelector('.vx-chat')!;
+    expect([...grid.children].includes(editor)).toBe(false);
+  });
+
+  it('keeps the transcript and the editor as separate rows of that column', async () => {
+    useProjectStore.setState({
+      current: makeProject({ participantIds: ['p1'], turns: [TURN] }),
+    });
+    const { container } = render(<ChatScreen />);
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    const face = container.querySelector('.vx-chat__mainface')!;
+    expect(face.querySelector(':scope > .vx-chat__log')).not.toBeNull();
+    expect(face.querySelector(':scope > .vx-chat__editor')).not.toBeNull();
   });
 
   it('shows a store error banner', async () => {

@@ -176,6 +176,22 @@ def test_render_uses_the_turn_params_not_the_profile(
     assert (request.num_step, request.speed) == (16, 0.75)
 
 
+def test_render_rejects_a_draft_holding_unknown_tags(engine_client, project, profile):
+    # Drafts accept anything; render is the gate.
+    created = engine_client.post(
+        f"/api/projects/{project['id']}/turns", json={"profileId": profile["id"]}
+    ).json()
+    turn_id = created["turns"][0]["id"]
+    engine_client.patch(
+        f"/api/projects/{project['id']}/turns/{turn_id}", json={"text": "hi [wobble]"}
+    )
+    response = engine_client.post(
+        f"/api/projects/{project['id']}/turns/{turn_id}/render"
+    )
+    assert response.status_code == 422
+    assert "[wobble]" in response.json()["detail"]
+
+
 def test_render_of_missing_turn_returns_404(engine_client, project):
     assert engine_client.post(
         f"/api/projects/{project['id']}/turns/ghost/render"

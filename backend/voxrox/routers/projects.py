@@ -5,7 +5,6 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import BaseModel, field_validator
 
-from voxrox import tags
 from voxrox.models import GenerationParams, Project, Turn, utc_now
 from voxrox.services import profiles as profile_service
 from voxrox.services import projects as service
@@ -41,12 +40,9 @@ def _load(project_id: str) -> Project:
         raise HTTPException(status_code=404, detail="project not found")
 
 
-def _reject_unknown_tags(text: str) -> None:
-    unknown = tags.unknown_tags(text)
-    if unknown:
-        raise HTTPException(
-            status_code=422, detail=f"unknown tags: {', '.join(unknown)}"
-        )
+# Drafts intentionally accept any text, including tag-shaped tokens the engine
+# does not know. Autosave writes on every keystroke pause, so a draft is often
+# mid-word; render is the gate that validates (see services/render.py).
 
 
 @router.get("")
@@ -89,7 +85,6 @@ def add_turn(project_id: str, body: CreateTurnBody) -> dict:
         profile = profile_service.get_profile(body.profileId)
     except NotFoundError:
         raise HTTPException(status_code=404, detail="profile not found")
-    _reject_unknown_tags(body.text)
     project.turns.append(
         Turn(
             profile_id=profile.id,
@@ -110,8 +105,6 @@ def patch_turn(project_id: str, turn_id: str, patch: dict[str, Any]) -> dict:
         raise HTTPException(status_code=404, detail="turn not found")
     for immutable in ("id", "createdAt", "audio", "status", "profileId"):
         patch.pop(immutable, None)
-    if "text" in patch:
-        _reject_unknown_tags(patch["text"])
     merged = profile_service.deep_merge(turn.model_dump(by_alias=True), patch)
     try:
         updated = Turn.model_validate(merged)

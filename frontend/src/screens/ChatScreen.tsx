@@ -17,26 +17,28 @@ export function ChatScreen() {
   const profiles = useProfileStore((state) => state.profiles);
   const byId = useProfileStore((state) => state.byId);
   const {
-    current, summaries, error, renderingTurnId,
-    loadSummaries, open, create, addTurn, updateTurn, deleteTurn, renderTurn, clearError,
+    current, summaries, error, renderingTurnId, editingTurnId, draftStatus,
+    loadSummaries, open, close, create, addTurn, saveDraft, deleteTurn, renderTurn,
+    setEditingTurn, restoreSession, clearError,
   } = useProjectStore();
   const activeTurnIds = useSequencerStore((state) => state.activeTurnIds);
 
   const [projectName, setProjectName] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [editingTurnId, setEditingTurnId] = useState<string | null>(null);
 
   useEffect(() => {
     void loadSummaries();
-  }, [loadSummaries]);
+    // Reopen whatever session the browser was last in, so a reload lands back
+    // in the transcript rather than on the project list.
+    void restoreSession();
+  }, [loadSummaries, restoreSession]);
 
   const editingTurn = current?.turns.find((turn) => turn.id === editingTurnId) ?? null;
   const editingProfile = editingTurn ? byId(editingTurn.profileId) : undefined;
 
   const pick = async (profileId: string) => {
     setPickerOpen(false);
-    const turnId = await addTurn(profileId);
-    if (turnId) setEditingTurnId(turnId);
+    await addTurn(profileId);
   };
 
   if (!current) {
@@ -96,17 +98,28 @@ export function ChatScreen() {
             </div>
           </PixelScrollArea>
         </PixelPanel>
-        <PixelButton
-          className="vx-addbtn"
-          variant="primary"
-          size="lg"
-          onClick={() => setPickerOpen(true)}
-        >
-          Add
-        </PixelButton>
+        <div className="vx-chips">
+          <PixelButton
+            className="vx-addbtn"
+            variant="primary"
+            size="lg"
+            onClick={() => setPickerOpen(true)}
+          >
+            Add
+          </PixelButton>
+          <PixelButton size="sm" variant="ghost" onClick={close}>
+            Sessions
+          </PixelButton>
+        </div>
       </PixelFrame>
 
-      <PixelFrame variant="dashed" style={{ minHeight: 0, display: 'flex' }}>
+      {/* The editor is docked inside this column, not a sibling of the grid —
+          as a third grid item it landed in the narrow rail column. */}
+      <PixelFrame
+        variant="dashed"
+        className="vx-chat__main"
+        faceClassName="vx-chat__mainface"
+      >
         <div className="vx-chat__log">
           {error && (
             <PixelFrame variant="accent">
@@ -126,11 +139,29 @@ export function ChatScreen() {
               profile={byId(turn.profileId)}
               active={activeTurnIds.includes(turn.id)}
               volume={current.sequencer.volume}
-              onEdit={setEditingTurnId}
+              onEdit={setEditingTurn}
               onDelete={(turnId) => void deleteTurn(turnId)}
             />
           ))}
         </div>
+
+        {editingTurn && editingProfile && (
+          <TurnEditor
+            open
+            className="vx-chat__editor"
+            turn={editingTurn}
+            profile={editingProfile}
+            rendering={renderingTurnId === editingTurn.id}
+            draftStatus={draftStatus}
+            onSave={async (patch: { text: string; params: GenerationParams }) => {
+              await saveDraft(editingTurn.id, patch);
+            }}
+            onRender={async () => {
+              await renderTurn(editingTurn.id);
+            }}
+            onClose={() => setEditingTurn(null)}
+          />
+        )}
       </PixelFrame>
 
       <ProfilePicker
@@ -139,22 +170,6 @@ export function ChatScreen() {
         onPick={(profileId) => void pick(profileId)}
         onClose={() => setPickerOpen(false)}
       />
-
-      {editingTurn && editingProfile && (
-        <TurnEditor
-          open
-          turn={editingTurn}
-          profile={editingProfile}
-          rendering={renderingTurnId === editingTurn.id}
-          onSave={async (patch: { text: string; params: GenerationParams }) => {
-            await updateTurn(editingTurn.id, patch);
-          }}
-          onRender={async () => {
-            await renderTurn(editingTurn.id);
-          }}
-          onClose={() => setEditingTurnId(null)}
-        />
-      )}
     </div>
   );
 }

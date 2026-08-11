@@ -19,7 +19,13 @@ export interface TurnEditorProps {
   onSave: (patch: { text: string; params: GenerationParams }) => Promise<void>;
   onRender: () => Promise<void>;
   onClose: () => void;
+  className?: string;
+  /** Shown in the title bar so autosave is visible rather than implied. */
+  draftStatus?: 'idle' | 'saving' | 'saved';
 }
+
+/** Quiet period after the last keystroke before a draft is written. */
+export const AUTOSAVE_MS = 700;
 
 export function TurnEditor({
   open,
@@ -29,6 +35,8 @@ export function TurnEditor({
   onSave,
   onRender,
   onClose,
+  className = '',
+  draftStatus = 'idle',
 }: TurnEditorProps) {
   const [text, setText] = useState(turn.text);
   const [params, setParams] = useState<GenerationParams>(turn.params);
@@ -43,6 +51,41 @@ export function TurnEditor({
     setPreview(null);
     setError(null);
   }, [turn.id]);
+
+  // Autosave. Without this a draft lives only in React state, so closing the
+  // window or reloading the page threw the text away.
+  const saveRef = useRef(onSave);
+  saveRef.current = onSave;
+  // Compared by value: every save returns a freshly parsed turn, so a
+  // reference check would report "dirty" forever and autosave in a loop.
+  const dirty =
+    text !== turn.text ||
+    params.numStep !== turn.params.numStep ||
+    params.speed !== turn.params.speed ||
+    params.duration !== turn.params.duration;
+
+  useEffect(() => {
+    if (!dirty) return;
+    const timer = setTimeout(() => {
+      void saveRef.current({ text, params });
+    }, AUTOSAVE_MS);
+    return () => clearTimeout(timer);
+  }, [text, params, dirty]);
+
+  // Flush on unmount so closing never drops the last few keystrokes.
+  const latest = useRef({ text, params, dirty });
+  latest.current = { text, params, dirty };
+  useEffect(
+    () => () => {
+      if (latest.current.dirty) {
+        void saveRef.current({
+          text: latest.current.text,
+          params: latest.current.params,
+        });
+      }
+    },
+    [],
+  );
 
   const blank = text.trim().length === 0;
 
@@ -86,8 +129,17 @@ export function TurnEditor({
   return (
     <PixelWindow
       open={open}
-      title={`Editing turn — ${label}`}
+      ariaLabel={`Editing turn — ${label}`}
+      title={
+        <>
+          <span>Editing turn — {label}</span>
+          <span className="vx-editor__status" data-testid="draft-status">
+            {draftStatus === 'saving' ? 'saving…' : draftStatus === 'saved' ? 'saved' : ''}
+          </span>
+        </>
+      }
       onClose={onClose}
+      className={className}
       footer={
         <>
           {error && <span className="vx-field__label">{error}</span>}

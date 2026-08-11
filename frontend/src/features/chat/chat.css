@@ -18,14 +18,30 @@
   flex-direction: column;
   gap: var(--gap-1);
 }
+/* Right-hand column: transcript scrolls, editor docks under it. */
+.vx-chat__main {
+  min-height: 0;
+}
+.vx-chat__mainface {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--gap-2);
+  min-height: 0;
+  height: 100%;
+}
 .vx-chat__log {
   display: flex;
   flex-direction: column;
   gap: var(--gap-2);
   min-height: 0;
-  flex: 1;
   overflow-y: auto;
   padding-right: var(--gap-1);
+}
+/* Capped so a long transcript stays visible while composing; the window body
+   scrolls internally past this height. */
+.vx-chat__editor {
+  max-height: 60vh;
+  min-height: 0;
 }
 /* Each turn is rimmed in its speaker's colour — --accent is set inline. */
 .vx-turn {
@@ -90,6 +106,14 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.vx-editor__status {
+  margin-left: auto;
+  padding-left: var(--gap-1);
+  font-size: var(--fs-xs);
+  color: var(--m-gold-dk);
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .vx-editor {
   display: grid;

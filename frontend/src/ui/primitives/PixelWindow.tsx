@@ -5,6 +5,8 @@ import './primitives.css';
 export interface PixelWindowProps {
   open: boolean;
   title: ReactNode;
+  /** Accessible name. Required when `title` is not a plain string. */
+  ariaLabel?: string;
   onClose?: () => void;
   modal?: boolean;
   footer?: ReactNode;
@@ -16,6 +18,7 @@ export interface PixelWindowProps {
 export function PixelWindow({
   open,
   title,
+  ariaLabel,
   onClose,
   modal = false,
   footer,
@@ -34,7 +37,7 @@ export function PixelWindow({
 
   if (!open) return null;
 
-  const titleText = typeof title === 'string' ? title : 'window';
+  const titleText = ariaLabel ?? (typeof title === 'string' ? title : 'window');
 
   const windowEl = (
     <PixelFrame

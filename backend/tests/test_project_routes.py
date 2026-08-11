@@ -81,16 +81,34 @@ def test_patch_turn_updates_text_and_params(client, project, profile_id):
     assert turn["params"]["numStep"] == 32
 
 
-def test_patch_turn_rejects_unknown_tags(client, project, profile_id):
+def test_patch_turn_accepts_a_half_typed_draft(client, project, profile_id):
+    # Autosave fires mid-keystroke, so a draft must be able to hold anything —
+    # including tag-shaped tokens the engine will later reject at render.
     created = client.post(
         f"/api/projects/{project['id']}/turns", json={"profileId": profile_id}
     ).json()
     turn_id = created["turns"][0]["id"]
     response = client.patch(
-        f"/api/projects/{project['id']}/turns/{turn_id}", json={"text": "hi [wobble]"}
+        f"/api/projects/{project['id']}/turns/{turn_id}", json={"text": "hi [wobble] [sig"}
     )
-    assert response.status_code == 422
-    assert "[wobble]" in response.json()["detail"]
+    assert response.status_code == 200
+    assert response.json()["turns"][0]["text"] == "hi [wobble] [sig"
+
+
+def test_draft_text_survives_a_reload_of_the_project(client, project, profile_id):
+    created = client.post(
+        f"/api/projects/{project['id']}/turns", json={"profileId": profile_id}
+    ).json()
+    turn_id = created["turns"][0]["id"]
+    client.patch(
+        f"/api/projects/{project['id']}/turns/{turn_id}",
+        json={"text": "Half a thought", "params": {"speed": 1.3}},
+    )
+    # Re-fetch as a cold client would after a browser reload.
+    reloaded = client.get(f"/api/projects/{project['id']}").json()
+    assert reloaded["turns"][0]["text"] == "Half a thought"
+    assert reloaded["turns"][0]["params"]["speed"] == 1.3
+    assert reloaded["turns"][0]["status"] == "draft"
 
 
 def test_delete_turn_removes_it_and_drops_orphan_participant(client, project, profile_id):
